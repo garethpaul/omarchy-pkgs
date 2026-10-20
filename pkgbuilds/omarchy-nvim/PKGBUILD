@@ -1,12 +1,12 @@
 # Maintainer: Ryan Hughes <ryan@omarchy.org>
 pkgname=omarchy-nvim
 pkgver=2026.9.21
-pkgrel=5
+pkgrel=6
 pkgdesc="Pre-built LazyVim configuration with cached plugins"
 arch=('any')
 url="https://github.com/LazyVim/LazyVim"
 license=('MIT')
-depends=('neovim>=0.9.0' 'git')
+depends=('neovim>=0.9.0' 'git' 'shfmt' 'stylua')
 makedepends=('git' 'nodejs' 'npm' 'tree-sitter-cli')
 conflicts=('omarchy-lazyvim')
 options=('!debug')
@@ -110,6 +110,12 @@ package() {
 
   cp -a "$XDG_CONFIG_HOME/nvim" "$pkgdir/usr/share/$pkgname/config"
   cp -a "$XDG_DATA_HOME/nvim" "$pkgdir/usr/share/$pkgname/data"
+
+  # Mason's installed tools, symlinks and receipts describe the build host.
+  # Keep the Lua plugin cache architecture-independent; use native package
+  # dependencies for the default formatters and let Mason install other tools
+  # for the user's machine when requested.
+  rm -rf "$pkgdir/usr/share/$pkgname/data/mason"
 
   # Remove everything from site/ directory but keep the directory to prevent error
   rm -rf "$pkgdir/usr/share/$pkgname/data/site"/*
